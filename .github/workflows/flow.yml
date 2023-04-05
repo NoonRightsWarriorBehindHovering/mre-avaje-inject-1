@@ -1,0 +1,31 @@
+name: Test
+
+on:
+  push:
+
+jobs:
+  issue:
+    name: Issue
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v3
+        - uses: actions/setup-java@v3
+          with:
+            distribution: 'temurin'
+            java-version: '17'
+            cache: 'maven'
+        - run: mvn compile
+        - run: bash shell.sh
+
+  workaround:
+    name: Potential Workaround
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v3
+        - uses: actions/setup-java@v3
+          with:
+            distribution: 'temurin'
+            java-version: '17'
+            cache: 'maven'
+        - run: (mvn clean compile || exit 0) && mvn compile
+        - run: bash shell.sh
