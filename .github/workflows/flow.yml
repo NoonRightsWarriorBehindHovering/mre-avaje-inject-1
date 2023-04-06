@@ -4,6 +4,33 @@ on:
   push:
 
 jobs:
+  javac_fixed:
+    name: javac - fixed (workaround)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+      - run: sed '/import org.example.bug.BugModule;/d' src/main/java/module-info.java | sed 's/provides Module with BugModule/provides Module with org.example.bug.BugModule/' > src/main/java/module-info.java
+      - run: cat src/main/java/module-info.java
+      - run: bash javac.sh
+
+  javac_flawed:
+    name: javac - issue
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+      - run: cat src/main/java/module-info.java
+      - run: bash javac.sh
+
   issue:
     name: Issue
     runs-on: ubuntu-latest
