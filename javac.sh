@@ -12,7 +12,27 @@ MODULE_PATH_PROCESSORS="${LIB_AVAJE_INJECT}:${LIB_AVAJE_LANG}:${LIB_AVAJE_APPLOG
 
 rm -rf target_manual
 
-javac \
+if [ -z ${JAVA_HOME+x} ]; then
+    BIN_JAVAC=javac
+    BIN_JAVA=java
+else
+    BIN_JAVA=${JAVA_HOME}/bin/java
+    BIN_JAVAC=${JAVA_HOME}/bin/javac
+    if ! type "${BIN_JAVA}" &> /dev/null; then
+        echo "JAVA NOT FOUND: '$BIN_JAVA'";
+        exit 1
+    fi
+
+    if ! type "${BIN_JAVAC}" &> /dev/null; then
+        echo "JAVA NOT FOUND: '$BIN_JAVA'";
+        exit 1
+    fi
+fi
+
+${BIN_JAVA} -version || exit 0
+${BIN_JAVAC} -version || exit 0
+
+${BIN_JAVAC} \
     -p ${MODULE_PATH} \
     --processor-module-path ${MODULE_PATH_PROCESSORS} \
     -d target_manual \
@@ -21,5 +41,5 @@ javac \
 EXECUTABLE=$(realpath ./target_manual)
 MODULE_PATH="${MODULE_PATH}:${EXECUTABLE}"
 
-java --module-path "$MODULE_PATH" --list-modules
-java --module-path "$MODULE_PATH" --module bug/org.example.bug.Launcher
+${BIN_JAVA} --module-path "$MODULE_PATH" --list-modules
+${BIN_JAVA} --module-path "$MODULE_PATH" --module bug/org.example.bug.Launcher
