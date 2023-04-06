@@ -14,8 +14,8 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
-      # Just downloads the dependencies using maven, could be done manually
-      - run: mvn dependency:go-offline
+      # Going offline does not download annotation processors. So we run clean after
+      - run: mvn compile clean
       - run: sed '/import org.example.bug.BugModule;/d' src/main/java/module-info.java | sed 's/provides Module with BugModule/provides Module with org.example.bug.BugModule/' | tee src/main/java/module-info.java
       - run: cat src/main/java/module-info.java
       - run: bash javac.sh
@@ -30,8 +30,8 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
-      # Just downloads the dependencies using maven, could be done manually
-      - run: mvn dependency:go-offline
+      # Going offline does not download annotation processors. So we run clean after
+      - run: mvn compile clean
       - run: cat src/main/java/module-info.java
       - run: bash javac.sh
 
